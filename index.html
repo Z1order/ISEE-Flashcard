@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISEE Vocabulary Flashcards</title>
+<style>
+    /* General Styling */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #f0f6fc;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        color: #1a1a1a;
+    }
+
+    h1 {
+        margin-bottom: 10px;
+        font-weight: 700;
+        color: #0056b3;
+    }
+
+    p {
+        text-align: center;
+        max-width: 600px;
+        color: #444;
+        margin-bottom: 25px;
+        font-size: 1.05em;
+    }
+
+    /* Flashcard Styling */
+    .flashcard-container {
+        perspective: 1200px;
+        margin-bottom: 35px;
+    }
+
+    .flashcard {
+        width: 340px;
+        height: 220px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0, 86, 179, 0.25);
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .flashcard.flipped {
+        transform: rotateY(180deg);
+    }
+
+    .front, .back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 25px;
+        box-sizing: border-box;
+        text-align: center;
+        font-size: 1.3em;
+        font-weight: 600;
+        border-radius: 20px;
+    }
+
+    .front {
+        background: #ffffff;
+        color: #0056b3;
+    }
+
+    .back {
+        background: #0056b3;
+        color: #ffffff;
+        transform: rotateY(180deg);
+    }
+
+    /* Controls */
+    .controls {
+        display: flex;
+        gap: 25px;
+    }
+
+    button {
+        padding: 12px 28px;
+        font-size: 1.05em;
+        font-weight: 600;
+        background: #007aff;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+        box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    }
+
+    button:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+    }
+</style>
+</head>
+<body>
+
+<h1>ISEE Vocabulary Flashcards</h1>
+<p>Click or press spacebar to flip. Use arrows or buttons to move through cards. Mark words as mastered with "Got it."</p>
+
+<div class="flashcard-container" id="flashcard-container"></div>
+
+<div class="controls">
+    <button onclick="prevCard()">Previous</button>
+    <button onclick="nextCard()">Next</button>
+    <button onclick="gotIt()">Got it</button>
+</div>
+
+<script>
+const vocabulary = [
+  { word: 'Abolish', definition: 'To formally put an end to (a system, practice, or institution).' },
+  { word: 'Bungle', definition: 'To carry out a task clumsily or incompetently.' },
+  { word: 'Document', definition: 'Record something in written, photographic, or other form.' },
+  { word: 'Illegible', definition: 'Not clear enough to be read.' },
+  { word: 'Pasture', definition: 'Land covered with grass suitable for grazing animals.' },
+  { word: 'Soar', definition: 'To fly or rise high in the air.' },
+  { word: 'Abet', definition: 'To encourage or assist someone to do something wrong.' },
+  { word: 'Continuous', definition: 'Forming an unbroken whole; without interruption.' },
+  { word: 'Idiom', definition: 'A phrase with a meaning not deducible from individual words.' },
+  { word: 'Migration', definition: 'Movement from one region or habitat to another.' },
+  { word: 'Prosecute', definition: 'To institute legal proceedings against someone.' },
+  { word: 'Subsequent', definition: 'Coming after something in time; following.' },
+  { word: 'Abandon', definition: 'To cease to support or look after someone.' },
+  { word: 'Anticipate', definition: 'To regard as probable; expect or predict.' },
+  { word: 'Clarity', definition: 'The quality of being clear and easy to understand.' },
+  { word: 'Dense', definition: 'Closely compacted in substance.' },
+  { word: 'Elude', definition: 'To evade or escape, typically in a skillful or cunning way.' },
+  { word: 'Focus', definition: 'The center of interest or activity.' },
+  { word: 'Insinuate', definition: 'To suggest or hint something (often unpleasant) indirectly.' },
+  { word: 'Naive', definition: 'Showing a lack of experience, wisdom, or judgment.' },
+  { word: 'Perturb', definition: 'To make someone anxious or unsettled.' },
+  { word: 'Saga', definition: 'A long story of heroic achievement.' },
+  { word: 'Vicious', definition: 'Deliberately cruel or violent.' },
+  { word: 'Absolve', definition: 'To set or declare someone free from blame or responsibility.' },
+  { word: 'Bamboozle', definition: 'To fool or cheat someone.' },
+  { word: 'Clamber', definition: 'To climb or move awkwardly or laboriously.' },
+  { word: 'Crucial', definition: 'Decisive or critical, especially to success or failure.' },
+  { word: 'Dispatch', definition: 'To send off to a destination or for a purpose.' },
+  { word: 'Fallacy', definition: 'A mistaken belief based on unsound argument.' },
+  { word: 'Inevitable', definition: 'Certain to happen; unavoidable.' },
+  { word: 'Onslaught', definition: 'A fierce or destructive attack.' },
+  { word: 'Rebuff', definition: 'To reject or criticize sharply.' },
+  { word: 'Strident', definition: 'Loud and harsh; grating.' },
+  { word: 'Comprehensive', definition: 'Including all or nearly all elements or aspects.' },
+  { word: 'Imply', definition: 'To strongly suggest the truth or existence of something unexpressed.' },
+  // Group 6 (Partial definitions sourced directly for sample; please verify as needed)
+  { word: 'Credible', definition: 'Able to be believed; convincing.' },
+  { word: 'Cursory', definition: 'Hasty and therefore not thorough or detailed.' },
+  { word: 'Cynic', definition: 'A person who believes others are motivated by self-interest only.' },
+  { word: 'Dearth', definition: 'A scarcity or lack of something.' },
+  { word: 'Deficient', definition: 'Insufficient or inadequate.' },
+  { word: 'Demonstrate', definition: 'Show or express by one’s actions.' },
+  { word: 'Detract', definition: 'To reduce or take away the worth or value of.' },
+  { word: 'Digress', definition: 'Leave the main subject temporarily in speaking or writing.' },
+  { word: 'Dilemma', definition: 'A difficult situation or problem.' },
+  { word: 'Distort', definition: 'Give a misleading or false impression of.' },
+  { word: 'Diversion', definition: 'The act of turning something aside from its course.' },
+  { word: 'Elation', definition: 'Great happiness and exhilaration.' },
+  { word: 'Elicit', definition: 'Evoke or draw out a response or reaction.' },
+  { word: 'Establish', definition: 'Show something to be true or certain by facts.' },
+  { word: 'Exacerbate', definition: 'Make a problem or negative feeling worse.' },
+  { word: 'Expansion', definition: 'The action of becoming larger or more extensive.' },
+  { word: 'Expectation', definition: 'A strong belief that something will happen.' },
+  { word: 'Explicit', definition: 'Stated clearly with no room for confusion.' },
+  { word: 'Express', definition: 'Convey a thought or feeling in words or gestures.' },
+  { word: 'Falter', definition: 'Start to lose strength or momentum.' },
+  { word: 'Familiar', definition: 'Well known or easily recognized.' },
+  { word: 'Feign', definition: 'Pretend to be affected by something.' },
+  { word: 'Fluctuate', definition: 'Rise and fall irregularly.' },
+  { word: 'Formulate', definition: 'Create or devise methodically.' }
+  // Continue with remaining groups to reach 1000 total words...
+];
+
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+shuffleArray(vocabulary);
+
+let currentIndex = 0;
+
+function showCard(index) {
+    if (vocabulary.length === 0) {
+        document.getElementById('flashcard-container').innerHTML = '<p><strong>🎉 You mastered all the words!</strong></p>';
+        return;
+    }
+    const cardData = vocabulary[index];
+    const card = document.createElement('div');
+    card.classList.add('flashcard');
+    card.innerHTML = `<div class="front">${cardData.word}</div><div class="back">${cardData.definition}</div>`;
+    card.onclick = () => card.classList.toggle('flipped');
+    const container = document.getElementById('flashcard-container');
+    container.innerHTML = '';
+    container.appendChild(card);
+}
+
+function nextCard() {
+    currentIndex = (currentIndex + 1) % vocabulary.length;
+    showCard(currentIndex);
+}
+
+function prevCard() {
+    currentIndex = (currentIndex - 1 + vocabulary.length) % vocabulary.length;
+    showCard(currentIndex);
+}
+
+function gotIt() {
+    vocabulary.splice(currentIndex, 1);
+    if (currentIndex >= vocabulary.length) currentIndex = 0;
+    showCard(currentIndex);
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+        e.preventDefault();
+        const card = document.querySelector('.flashcard');
+        if (card) card.classList.toggle('flipped');
+    }
+    if (e.code === 'ArrowRight') nextCard();
+    if (e.code === 'ArrowLeft') prevCard();
+});
+
+showCard(currentIndex);
+</script>
+
+</body>
+</html>
